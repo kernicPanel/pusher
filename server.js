@@ -8,13 +8,13 @@ var express = require('express'),
     path    = require('path'),
     http    = require('http'),
     path    = require('path'),
-    colors = require('colors');
+    colors  = require('colors');
   //io      = require('socket.io');
 
 var app = express();
 
 app.configure(function(){
-  app.set('port', 8080);
+  app.set('port', 8082);
   app.set('views', path.join(__dirname , path.join('/','views')));
   app.set('view engine', 'jade');
   app.use(express.favicon());
@@ -43,28 +43,14 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 server.eventsManager = require('./lib/eventsManager.js');
 server.eventsManager.init(server);
 
-server.eventsManager.emit('log', 'wooooooot');
-
 app.get('/', function(req, res){
-  res.render('index', { title: 'pusher' });
+  console.log("req.query : ", req.query);
+  server.eventsManager.emit('log', req.query);
+  //res.render('index', { title: 'pusher' });
 });
 
 app.post('/', function(req, res){
-  server.eventsManager.emit('log', req);
+  console.log("req.body : ", req.body);
+  server.eventsManager.emit('log', req.body);
 });
 
-/*
- *var io = require('socket.io').listen(server);
- *
- *io.sockets.on('connection', function (socket) {
- *
- *  // Emit a message to send it to the client.
- *  socket.emit('ping', { msg: 'Hello. I know socket.io.' });
- *
- *  // Print messages from the client.
- *  socket.on('pong', function (data) {
- *    console.log(data.msg.blue);
- *  });
- *
- *});
- */
