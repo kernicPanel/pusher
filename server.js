@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 var express = require('express'),
     path    = require('path'),
     http    = require('http'),
     path    = require('path'),
     colors  = require('colors');
-  //io      = require('socket.io');
 
 var app = express();
 
@@ -39,18 +34,40 @@ var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port %d in %s mode".red.inverse, app.get('port'), app.settings.env);
 });
 
+server.users = {};
+server.addUser = function addUser ( user, socket ) {
+  if (!server.users[user]) {
+    server.users[user] = {};
+    console.log("server.users : ", server.users);
+    server.users[user].socket = socket;
+    console.log("server.users : ", server.users);
+  }
+};
+
+server.deleteUser = function delUser ( user ) {
+  delete server.users[user];
+  console.log("server.users : ", server.users);
+};
+
 
 server.eventsManager = require('./lib/eventsManager.js');
 server.eventsManager.init(server);
 
 app.get('/', function(req, res){
   console.log("req.query : ", req.query);
-  server.eventsManager.emit('log', req.query);
-  //res.render('index', { title: 'pusher' });
+
+  var user = req.query.user;
+  if (!!server.users[user]) {
+    server.users[user].socket.emit('message', req.query);
+  }
 });
 
 app.post('/', function(req, res){
   console.log("req.body : ", req.body);
-  server.eventsManager.emit('log', req.body);
+
+  var user = req.body.user;
+  if (!!server.users[user]) {
+    server.users[user].socket.emit('message', req.body);
+  }
 });
 
