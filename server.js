@@ -9,7 +9,7 @@ var express = require('express'),
 var app = express();
 
 app.configure(function(){
-  app.set('port', 8082);
+  app.set('port', 8088);
   app.set('views', path.join(__dirname , path.join('/','views')));
   app.set('view engine', 'jade');
   app.use(express.favicon());
