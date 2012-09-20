@@ -56,15 +56,17 @@ server.addUser = function addUser ( user, socket, ips ) {
     if (server.ips[ip].indexOf(user) < 0) {
       server.ips[ip].push(user);
     }
-
-    console.log("server.ips[ip] : ", server.ips[ip]);
   });
   console.log("server.ips : ", server.ips);
 };
 
-server.deleteUser = function delUser ( user ) {
+server.deleteUser = function deleteUser ( user ) {
+  console.log("deleteUser : ".yellow.inverse);
   server.users[user].ips.forEach(function(ip) {
-    delete server.ips[ip][user];
+    server.ips[ip].splice(server.ips[ip].indexOf(user), 1);
+    if (!server.ips[ip].length) {
+      delete server.ips[ip];
+    }
   });
   delete server.users[user];
   console.log("server.users : ", server.users);
