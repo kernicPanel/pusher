@@ -37,18 +37,38 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 server.config = require('./config.js');
 
 server.users = {};
-server.addUser = function addUser ( user, socket ) {
+server.ips = {};
+server.addUser = function addUser ( user, socket, ips ) {
+  console.log("addUser : ".blue.inverse);
   if (!server.users[user]) {
     server.users[user] = {};
     console.log("server.users : ", server.users);
     server.users[user].socket = socket;
+    server.users[user].ips = ips;
     console.log("server.users : ", server.users);
   }
+
+  ips.forEach(function(ip){
+    if (!server.ips[ip]) {
+      server.ips[ip] = [];
+    }
+
+    if (server.ips[ip].indexOf(user) < 0) {
+      server.ips[ip].push(user);
+    }
+
+    console.log("server.ips[ip] : ", server.ips[ip]);
+  });
+  console.log("server.ips : ", server.ips);
 };
 
 server.deleteUser = function delUser ( user ) {
+  server.users[user].ips.forEach(function(ip) {
+    delete server.ips[ip][user];
+  });
   delete server.users[user];
   console.log("server.users : ", server.users);
+  console.log("server.ips : ", server.ips);
 };
 
 
