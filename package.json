@@ -7,10 +7,13 @@
   "scripts": {
     "start": "node server.js"
   },
-  "version": "0.1.2-14",
+  "version": "0.1.2-15",
   "dependencies": {
     "socket.io": "0.9.x",
+    "amqp": "git+https://github.com/postwait/node-amqp.git#80fc04991a",
+    "rabbit.js": "git://github.com/squaremo/rabbit.js.git",
     "express": "3.0.x",
+    "sanitizer": "0.0.15",
     "connect": "1.8.5",
     "jade": ">= 0.27.0",
     "colors": "*"

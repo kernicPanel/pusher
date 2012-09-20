@@ -34,6 +34,8 @@ var server = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port %d in %s mode".red.inverse, app.get('port'), app.settings.env);
 });
 
+server.config = require('./config.js');
+
 server.users = {};
 server.addUser = function addUser ( user, socket ) {
   if (!server.users[user]) {
@@ -52,6 +54,9 @@ server.deleteUser = function delUser ( user ) {
 
 server.eventsManager = require('./lib/eventsManager.js');
 server.eventsManager.init(server);
+
+server.broker = require('./lib/broker2.js');
+server.broker.init(server);
 
 app.get('/', function(req, res){
   console.log("req.query : ", req.query);
