@@ -1,14 +1,14 @@
 var config = {};
 
-config.broker = {};
+config.amqp = {};
 
-config.broker.options = {
+config.amqp.options = {
   host: 'rabbit.host',
   ssl: true,
-  port: 5672,
-  login: 'logir',
+  port: '5672',
+  login: 'login',
   password: 'password',
-  vhost: '/vhost'
+  vhost: ''
 };
 
 module.exports = config;
