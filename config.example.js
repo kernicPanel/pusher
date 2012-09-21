@@ -14,10 +14,10 @@ config.amqp.options = {
 config.auth = {
   url: 'auth.url',
   path: '/path',
-  ids: 'get.instances.url'
+  ips: 'get.instances.url'
 };
 
-config.ids = {
+config.ips = {
   url: 'api.url',
   path: '/path/to/instances',
   getName: 'name'

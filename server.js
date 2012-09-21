@@ -72,9 +72,9 @@ server.auth = function auth ( cookie, callback ) {
 };
 
 server.getIPs = function getIPs ( token, callback ) {
-  var idsUrl = server.config.auth.ids + token;
+  var ipsUrl = server.config.auth.ips + token;
 
-  var req = http.request(idsUrl, function(res) {
+  var req = http.request(ipsUrl, function(res) {
     res.setEncoding('utf8');
     var response = '';
     res.on('data', function (data) {
