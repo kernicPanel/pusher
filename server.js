@@ -49,6 +49,8 @@ server.auth = function auth ( cookie, callback ) {
     }
   };
 
+  console.log("options : ", options);
+
   var req = https.request(options, function(res) {
     res.setEncoding('utf8');
     res.on('data', function (data) {
@@ -126,14 +128,16 @@ server.addUser = function addUser ( user, socket, ips ) {
 };
 
 server.deleteUser = function deleteUser ( user ) {
-  console.log("deleteUser : ".yellow.inverse);
-  server.users[user].ips.forEach(function(ip) {
-    server.ips[ip].splice(server.ips[ip].indexOf(user), 1);
-    if (!server.ips[ip].length) {
-      delete server.ips[ip];
-    }
-  });
-  delete server.users[user];
+  console.log("deleteUser : ".yellow.inverse, user);
+  if (server.users[user]) {
+    server.users[user].ips.forEach(function(ip) {
+      server.ips[ip].splice(server.ips[ip].indexOf(user), 1);
+      if (!server.ips[ip].length) {
+        delete server.ips[ip];
+      }
+    });
+    delete server.users[user];
+  }
 };
 
 
