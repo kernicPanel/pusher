@@ -3,6 +3,7 @@
 var express = require('express'),
     path    = require('path'),
     http    = require('http'),
+    https    = require('https'),
     path    = require('path'),
     colors  = require('colors');
 
@@ -36,16 +37,81 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 server.config = require('./config.js');
 
+server.auth = function auth ( cookie, callback ) {
+  var authUrl = server.config.auth.url;
+  var authPath = server.config.auth.path;
+
+  var options = {
+    host: authUrl,
+    path: authPath,
+    headers: {
+      Cookie: cookie
+    }
+  };
+
+  var req = https.request(options, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function (data) {
+      try {
+        data = JSON.parse(data);
+        var token = data.token;
+        server.getIPs(token, callback);
+      }
+      catch (e) {
+        callback(e, null, null);
+      }
+    });
+  });
+  
+  req.on('error', function(e) {
+      console.log('problem with request: ' + e);
+  });
+
+  // write data to request body
+  req.end();
+};
+
+server.getIPs = function getIPs ( token, callback ) {
+  var idsUrl = server.config.auth.ids + token;
+
+  var req = http.request(idsUrl, function(res) {
+    res.setEncoding('utf8');
+    var response = '';
+    res.on('data', function (data) {
+      response += data;
+    });
+    res.on('end', function () {
+      try {
+        response = JSON.parse(response);
+        var objects = response.response;
+        var ips = [];
+        objects.forEach(function(object){
+          ips.push(object.ip);
+        });
+        callback(null, token, ips);
+      }
+      catch (e) {
+        callback(e, token, null);
+      }
+    });
+  });
+  
+  req.on('error', function(e) {
+      console.log('problem with request: ' + e);
+  });
+
+  // write data to request body
+  req.end();
+};
+
 server.users = {};
 server.ips = {};
 server.addUser = function addUser ( user, socket, ips ) {
-  console.log("addUser : ".blue.inverse);
+  console.log("addUser : ".blue.inverse, user);
   if (!server.users[user]) {
     server.users[user] = {};
-    console.log("server.users : ", server.users);
     server.users[user].socket = socket;
     server.users[user].ips = ips;
-    console.log("server.users : ", server.users);
   }
 
   ips.forEach(function(ip){
@@ -57,7 +123,6 @@ server.addUser = function addUser ( user, socket, ips ) {
       server.ips[ip].push(user);
     }
   });
-  console.log("server.ips : ", server.ips);
 };
 
 server.deleteUser = function deleteUser ( user ) {
@@ -69,8 +134,6 @@ server.deleteUser = function deleteUser ( user ) {
     }
   });
   delete server.users[user];
-  console.log("server.users : ", server.users);
-  console.log("server.ips : ", server.ips);
 };
 
 

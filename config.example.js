@@ -11,4 +11,16 @@ config.amqp.options = {
   vhost: ''
 };
 
+config.auth = {
+  url: 'auth.url',
+  path: '/path',
+  ids: 'get.instances.url'
+};
+
+config.ids = {
+  url: 'api.url',
+  path: '/path/to/instances',
+  getName: 'name'
+};
+
 module.exports = config;
